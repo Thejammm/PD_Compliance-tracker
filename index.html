@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Regulations Compliance Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- Left Logo -->
+            <div class="header-logo-left">
+                <div class="chapter-two-logo">
+                    <div class="logo-main-text">
+                        <span class="chapter-word">AHS</span> <span class="two-word">Compliance</span>
+                    </div>
+                    <div class="logo-underline"></div>
+                    <div class="consulting-text">Consulting</div>
+                </div>
+            </div>
+            
+            <!-- Right Logo -->
+            <div class="header-logo-right">
+                <div class="chapter-two-logo">
+                    <div class="logo-main-text">
+                        <span class="chapter-word">AHS</span> <span class="two-word">Compliance</span>
+                    </div>
+                    <div class="logo-underline"></div>
+                    <div class="consulting-text">Consulting</div>
+                </div>
+            </div>
+            
+            <h1>Building Regulations Compliance Tracker</h1>
+            <p>Track design decisions and compliance with functional requirements</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('compliance')" id="tab-compliance">Compliance Tracker</button>
+            <button class="tab-btn" onclick="switchTab('pdbrtracker')" id="tab-pdbrtracker">PD BR Compliance Tracker</button>
+            <button class="tab-btn" onclick="switchTab('review')" id="tab-review">PD Review</button>
+        </div>
+
+        <!-- Tab 1: Existing Compliance Tracker -->
+        <div class="tab-panel active" id="panel-compliance">
+            <div class="project-info">
+                <strong>Project Details:</strong><br><br>
+                <input type="text" id="projectName" placeholder="Project Name" maxlength="100">
+                <input type="text" id="projectRef" placeholder="Project Reference" maxlength="50">
+                <input type="text" id="designerName" placeholder="Designer Name" maxlength="100">
+                <select id="designerSpecialism" class="compliance-select" onchange="onSpecialismChange()">
+                    <option value="">Designer Specialism</option>
+                    <option value="Architect">Architect</option>
+                    <option value="Structural Engineer">Structural Engineer</option>
+                    <option value="Civil Engineer">Civil Engineer</option>
+                    <option value="Fire Engineer">Fire Engineer</option>
+                    <option value="Building Services Engineer">Building Services Engineer</option>
+                    <option value="MEP Engineer">MEP Engineer</option>
+                    <option value="Facade Designer">Facade Designer</option>
+                    <option value="Acoustic Consultant">Acoustic Consultant</option>
+                    <option value="Sustainability Consultant">Sustainability Consultant</option>
+                    <option value="Specialist Designer">Specialist Designer</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input type="text" id="designerSpecialismOther" placeholder="Specify specialism" maxlength="100" style="display:none">
+                <button class="btn" onclick="saveProject()">Save Project</button>
+                
+                <div class="button-group">
+                    <strong>Designer Submission Workflow:</strong><br><br>
+                    <button class="btn export-btn" onclick="exportDesignerSubmission()">Export Designer Submission (HTML)</button>
+                    <button class="btn import-btn" onclick="importDesignerSubmission()">Import Designer Submission</button>
+                </div>
+
+                <div class="button-group">
+                    <strong>Reports & Data Management:</strong><br><br>
+                    <button class="btn pdf-btn" id="pdfBtn" onclick="AppPDF.export()">
+                        Generate Final PDF Report
+                        <span class="pdf-status" id="pdfStatus">Ready</span>
+                    </button>
+                    <button class="btn export-btn" onclick="exportProjectData()">Export Data</button>
+                    <button class="btn import-btn" onclick="importProjectData()">Import Data</button>
+                    <button class="btn danger-btn" onclick="clearAllData()">Clear All Data</button>
+                </div>
+            </div>
+
+            <div class="summary" id="summary">
+                <strong>Compliance Summary:</strong> <span id="summaryText">Complete the requirements below</span>
+            </div>
+
+            <div id="approvedDocs">
+                <!-- Approved Documents will be generated here -->
+            </div>
+        </div>
+
+        <!-- Tab 2: PD BR Compliance Tracker -->
+        <div class="tab-panel" id="panel-pdbrtracker">
+            <div class="pdbr-header-section">
+                <h2>PD BR Compliance Tracker</h2>
+                <p>Track all Principal Designer regulatory duties, notices, declarations and compliance actions across the project lifecycle under the Building Regulations 2010 (as amended) and Building Safety Act 2022.</p>
+            </div>
+
+            <!-- Project Information -->
+            <div class="pdt-project-info">
+                <strong>Project Information</strong>
+                <div class="pdt-fields">
+                    <div class="pdt-field">
+                        <label for="pdbrProjectName">Project Name</label>
+                        <input type="text" id="pdbrProjectName" placeholder="Enter project name" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="pdbrProjectAddress">Project Address</label>
+                        <input type="text" id="pdbrProjectAddress" placeholder="Enter project address" maxlength="300" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="pdbrProjectType">Project Type</label>
+                        <select id="pdbrProjectType" onchange="savePDBRProject()">
+                            <option value="">Select type</option>
+                            <option value="New Build - Residential">New Build — Residential</option>
+                            <option value="New Build - Commercial">New Build — Commercial</option>
+                            <option value="New Build - Mixed Use">New Build — Mixed Use</option>
+                            <option value="Refurbishment">Refurbishment</option>
+                            <option value="Extension">Extension</option>
+                            <option value="Change of Use">Change of Use</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="pdt-field pdt-field-hrb">
+                        <label for="pdbrIsHRB">Higher-Risk Building (HRB)?</label>
+                        <input type="checkbox" id="pdbrIsHRB" onchange="onPDBRHRBChange()">
+                        <span class="pdt-hrb-hint">18m+ / 7+ storeys, 2+ residential units</span>
+                    </div>
+                    <div class="pdt-field">
+                        <label for="pdbrPDName">Principal Designer</label>
+                        <input type="text" id="pdbrPDName" placeholder="PD name" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="pdbrPCName">Principal Contractor</label>
+                        <input type="text" id="pdbrPCName" placeholder="PC name" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="pdbrClientName">Client</label>
+                        <input type="text" id="pdbrClientName" placeholder="Client name" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="pdbrDate">Date</label>
+                        <input type="date" id="pdbrDate" onchange="savePDBRProject()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Building Control Information -->
+            <div class="pdt-project-info" id="bcInfoSection">
+                <strong>Building Control Information</strong>
+                <div class="pdt-fields">
+                    <div class="pdt-field">
+                        <label for="bcAuthority">Building Control Authority</label>
+                        <select id="bcAuthority" onchange="savePDBRProject()">
+                            <option value="">Select authority</option>
+                            <option value="Local Authority Building Control">Local Authority Building Control</option>
+                            <option value="Registered Building Control Approver">Registered Building Control Approver</option>
+                            <option value="Building Safety Regulator">Building Safety Regulator</option>
+                        </select>
+                    </div>
+                    <div class="pdt-field">
+                        <label for="bcRoute">Building Control Route</label>
+                        <select id="bcRoute" onchange="savePDBRProject()">
+                            <option value="">Select route</option>
+                            <option value="Full Plans">Full Plans</option>
+                            <option value="Building Notice">Building Notice</option>
+                            <option value="HRB Approval Application">HRB Approval Application</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="pdt-field">
+                        <label for="bcReference">Application / Approval Reference</label>
+                        <input type="text" id="bcReference" placeholder="Enter reference" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="bcApprovalType">Approval Type</label>
+                        <input type="text" id="bcApprovalType" placeholder="Enter approval type" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="bcApprovalDate">Approval Date</label>
+                        <input type="date" id="bcApprovalDate" onchange="savePDBRProject()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- HRB Determination (HRB only) -->
+            <div class="pdt-project-info hrb-only-section" id="hrbDeterminationSection" style="display:none">
+                <strong>Higher-Risk Building Determination</strong>
+                <div class="pdt-fields">
+                    <div class="pdt-field pdt-field-hrb" style="background:linear-gradient(135deg,#d1fae5 0%,#a7f3d0 100%);border-color:#10b981">
+                        <label for="hrbDeterminationConfirmed" style="color:#065f46">HRB Determination Confirmed</label>
+                        <input type="checkbox" id="hrbDeterminationConfirmed" onchange="savePDBRProject()" style="accent-color:#10b981">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="hrbHeight">Height (m)</label>
+                        <input type="text" id="hrbHeight" placeholder="e.g. 24" maxlength="20" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="hrbStoreys">Number of Storeys</label>
+                        <input type="text" id="hrbStoreys" placeholder="e.g. 8" maxlength="20" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="hrbResidentialUnits">Residential Units</label>
+                        <input type="text" id="hrbResidentialUnits" placeholder="e.g. 50" maxlength="20" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="hrbBuildingUse">Building Use</label>
+                        <input type="text" id="hrbBuildingUse" placeholder="e.g. Residential" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field" style="flex-basis:100%">
+                        <label for="hrbDeterminationNotes">HRB Determination Notes</label>
+                        <textarea id="hrbDeterminationNotes" placeholder="Record the basis on which the project is considered a Higher-Risk Building under the Building Safety Act 2022." rows="3" style="padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical" onchange="savePDBRProject()"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HRB Approval and Gateway Information (HRB only) -->
+            <div class="pdt-project-info hrb-only-section" id="hrbGatewaySection" style="display:none">
+                <strong>HRB Approval and Gateway Information</strong>
+                <div class="pdt-fields">
+                    <div class="pdt-field">
+                        <label for="bsrApprovalReference">BSR Approval Reference</label>
+                        <input type="text" id="bsrApprovalReference" placeholder="Enter BSR reference" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="gateway2Reference">Gateway 2 Submission Reference</label>
+                        <input type="text" id="gateway2Reference" placeholder="Enter reference" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="gateway2ApprovalDate">Gateway 2 Approval Date</label>
+                        <input type="date" id="gateway2ApprovalDate" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="gateway3Reference">Gateway 3 Submission Reference</label>
+                        <input type="text" id="gateway3Reference" placeholder="Enter reference" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="gateway3CompletionReference">Gateway 3 Completion Certificate Reference</label>
+                        <input type="text" id="gateway3CompletionReference" placeholder="Enter reference" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field" style="flex-basis:100%">
+                        <label for="gatewayNotes">Gateway Notes</label>
+                        <textarea id="gatewayNotes" placeholder="Record any gateway-related notes" rows="3" style="padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical" onchange="savePDBRProject()"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Golden Thread and Mandatory Occurrence Reporting (HRB only) -->
+            <div class="pdt-project-info hrb-only-section" id="goldenThreadSection" style="display:none">
+                <strong>Golden Thread and Mandatory Occurrence Reporting</strong>
+                <div class="pdt-fields">
+                    <div class="pdt-field">
+                        <label for="goldenThreadLocation">Golden Thread Information Location / Platform</label>
+                        <input type="text" id="goldenThreadLocation" placeholder="Where is the Golden Thread information held?" maxlength="300" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="goldenThreadReference">Golden Thread Reference / URL</label>
+                        <input type="text" id="goldenThreadReference" placeholder="Enter reference or URL" maxlength="300" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field pdt-field-hrb" style="background:linear-gradient(135deg,#d1fae5 0%,#a7f3d0 100%);border-color:#10b981">
+                        <label for="morEstablished" style="color:#065f46">MOR Process Established</label>
+                        <input type="checkbox" id="morEstablished" onchange="savePDBRProject()" style="accent-color:#10b981">
+                    </div>
+                    <div class="pdt-field" style="flex-basis:100%">
+                        <label for="morNotes">MOR Notes</label>
+                        <textarea id="morNotes" placeholder="Has a Mandatory Occurrence Reporting process been established?" rows="3" style="padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical" onchange="savePDBRProject()"></textarea>
+                    </div>
+                    <div class="pdt-field" style="flex-basis:100%">
+                        <label for="informationManagementNotes">Information Management Notes</label>
+                        <textarea id="informationManagementNotes" placeholder="Record any relevant information management arrangements." rows="3" style="padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical" onchange="savePDBRProject()"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="pdbr-controls">
+                <div class="pdbr-search">
+                    <input type="text" id="pdbrSearchInput" placeholder="Search compliance items..." maxlength="200" oninput="pdbrSearch()">
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="pdbr-progress-section">
+                <div class="pdbr-progress-label">
+                    <strong>Compliance Progress:</strong> <span id="pdbrProgressText">0 / 0 completed (0%)</span>
+                </div>
+                <div class="nd-progress-bar-bg">
+                    <div class="nd-progress-bar-fill" id="pdbrProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Accordion Groups -->
+            <div id="pdbrAccordions">
+                <!-- Generated by JS -->
+            </div>
+
+            <!-- Buttons -->
+            <div class="pdbr-buttons">
+                <button class="btn export-btn" onclick="exportPDBRData()">Export Data</button>
+                <button class="btn import-btn" onclick="importPDBRData()">Import Data</button>
+                <button class="btn danger-btn" onclick="clearPDBRData()">Clear Data</button>
+            </div>
+
+            <!-- Sign-Off Declaration -->
+            <div class="pdt-signoff" id="pdbrSignoff">
+                <h3>Principal Designer Declaration</h3>
+                <div class="pdt-declaration-text">
+                    I confirm that I have fulfilled my duties as Principal Designer under the Building Regulations and have planned, managed and monitored the design work to ensure compliance with the Building Regulations.
+                </div>
+                <div class="pdt-signoff-fields">
+                    <div class="pdt-field">
+                        <label for="pdbrSignName">Principal Designer Name</label>
+                        <input type="text" id="pdbrSignName" placeholder="Full name" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="pdbrSignDate">Date</label>
+                        <input type="date" id="pdbrSignDate" onchange="savePDBRProject()">
+                    </div>
+                    <div class="pdt-field pdt-field-wide">
+                        <label for="pdbrSignature">Signature</label>
+                        <input type="text" id="pdbrSignature" placeholder="Type name as digital signature" maxlength="150" onchange="savePDBRProject()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: PD Review -->
+        <div class="tab-panel" id="panel-review">
+            <div class="review-header-section">
+                <h2>PD Review — Designer Submission Review</h2>
+                <p>Review all merged designer submissions. Mark each compliance item as reviewed before generating the final report.</p>
+            </div>
+
+            <div class="review-summary" id="reviewSummary">
+                <div class="review-summary-grid">
+                    <div class="review-stat"><span class="review-stat-number" id="revTotalItems">0</span><span class="review-stat-label">Total Items</span></div>
+                    <div class="review-stat"><span class="review-stat-number" id="revWithSubs">0</span><span class="review-stat-label">With Submissions</span></div>
+                    <div class="review-stat"><span class="review-stat-number" id="revReviewed">0</span><span class="review-stat-label">Reviewed</span></div>
+                    <div class="review-stat"><span class="review-stat-number" id="revNotReviewed">0</span><span class="review-stat-label">Not Reviewed</span></div>
+                    <div class="review-stat"><span class="review-stat-number" id="revQueries">0</span><span class="review-stat-label">Queries</span></div>
+                    <div class="review-stat"><span class="review-stat-number" id="revAccepted">0</span><span class="review-stat-label">Accepted</span></div>
+                </div>
+            </div>
+
+            <div class="review-controls">
+                <div class="review-filter">
+                    <strong>Filter:</strong>
+                    <select id="reviewFilter" onchange="applyReviewFilter()">
+                        <option value="all">All Items</option>
+                        <option value="has-submissions">With Submissions</option>
+                        <option value="not-reviewed">Not Reviewed</option>
+                        <option value="reviewed">Reviewed</option>
+                        <option value="query">Query Raised</option>
+                        <option value="accepted">Accepted for Report</option>
+                    </select>
+                </div>
+                <div class="review-search">
+                    <input type="text" id="reviewSearchInput" placeholder="Search compliance items..." maxlength="200" oninput="applyReviewFilter()">
+                </div>
+                <button class="btn export-btn" onclick="saveAllReviews()">💾 Save Reviews</button>
+                <button class="btn pdf-btn" onclick="AppPDF.export()">📄 Generate Final PDF Report</button>
+            </div>
+
+            <div id="reviewItems">
+                <!-- Generated by JS -->
+            </div>
+
+            <!-- Principal Designer Declaration -->
+            <div class="pdt-signoff" id="pdDeclarationSection">
+                <h3>Principal Designer Declaration</h3>
+                <div class="pdt-declaration-text">
+                    I confirm that I have undertaken my duties as Principal Designer under the Building Regulations and have planned, managed and monitored the design work to ensure that, if built as designed, the building will comply with the Building Regulations.
+                </div>
+                <div class="pdt-signoff-fields">
+                    <div class="pdt-field">
+                        <label for="pdDeclarationName">Principal Designer Name</label>
+                        <input type="text" id="pdDeclarationName" placeholder="Full name" maxlength="150" onchange="savePDDeclaration()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="pdDeclarationOrganisation">Organisation</label>
+                        <input type="text" id="pdDeclarationOrganisation" placeholder="Organisation" maxlength="150" onchange="savePDDeclaration()">
+                    </div>
+                    <div class="pdt-field">
+                        <label for="pdDeclarationDate">Date</label>
+                        <input type="date" id="pdDeclarationDate" onchange="savePDDeclaration()">
+                    </div>
+                    <div class="pdt-field pdt-field-wide">
+                        <label for="pdDeclarationSignature">Signature</label>
+                        <input type="text" id="pdDeclarationSignature" placeholder="Type name as digital signature" maxlength="150" onchange="savePDDeclaration()">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="html2pdf.bundle.min.js"></script>
+    <script src="pdf-export.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
